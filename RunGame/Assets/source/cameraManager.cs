@@ -4,35 +4,27 @@ using UnityEngine;
 
 public class cameraManager : MonoBehaviour
 {
-    public GameObject target;   //カメラの追従先
-    Vector3 pos;               //カメラの初期位置
+    public GameObject Target;   //カメラの追従先
+    Vector3 PosCameraStart;     //カメラの初期位置
+    Vector3 PosTargetStart;     //カメラの追従先の初期位置
 
     // Start is called before the first frame update
     void Start()
     {
-        pos = Camera.main.gameObject.transform.position;    //カメラの初期位置を取得
+        //初期位置を保存
+        PosCameraStart = Camera.main.gameObject.transform.position;
+        PosTargetStart = Target.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 cameraPos = target.transform.position;  //カメラの現在位置取得
+        Vector3 posCameraUpdate = PosCameraStart;
 
-        if(target.transform.position.x<0)
-        {
-            cameraPos.x = 0;
-        }
+        //X座標のみターゲットに合わせて更新
+        posCameraUpdate.x += Target.transform.position.x - PosTargetStart.x;
 
-        if (target.transform.position.y<0)
-        {
-            cameraPos.y = 0;
-        }
-        else if(target.transform.position.y>0)
-        {
-            cameraPos.y = target.transform.position.y;
-        }
-
-        cameraPos.z = -10;
-        Camera.main.gameObject.transform.position = cameraPos;   //カメラを移動
+        //カメラ位置を更新
+        Camera.main.gameObject.transform.position = posCameraUpdate;
     }
 }

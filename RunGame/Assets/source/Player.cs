@@ -1,35 +1,91 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public float speed = 5f;    //移動速度
-    public float jumpP = 300f;  //ジャンプ力
+    Rigidbody2D rbody;          //プレイヤーのリジッドボディ
+    float speed_x = 5f;         //左右の移動スピード
+    float speed_y = 0f;         //上下の移動スピード
+    public GameObject endOg3;   //キャラクター　ゲームオーバー時
+    public GameObject result;   //テキスト　GameOver/GameClear
+    public GameObject score;    //テキスト　得点
+    int scoreAmount = 0;        //得点量
 
-    Rigidbody2D rbody;
-
+    // ゲーム開始時の処理
     void Start()
     {
-        //リジッドボディ取得
         rbody = GetComponent<Rigidbody2D>();
-        
+        rbody.velocity = new Vector2(speed_x, speed_y);
     }
 
-    // Update is called once per frame
+    // フレームごとの更新
     void Update()
     {
-        //スペースキー押下時、かつ上下移動無し時
-        if( Input.GetKeyDown(KeyCode.Space) && rbody.velocity.y == 0 )
+        //ゲームオーバー確定時
+        if(rbody.freezeRotation == false)
         {
-            //リジッドボディをjumpP分ジャンプさせる
-            rbody.AddForce(transform.up*jumpP);
+            GameOver();
+            return;
         }
+
+        //キーボード操作
+        if( Input.GetKey(KeyCode.UpArrow) )        //↑キー押下時　上移動
+        {
+            speed_y = 5f;
+        }
+        else if( Input.GetKey(KeyCode.DownArrow) )  //↓キー押下時　下移動
+        {
+            speed_y = -5f;
+        }
+        else
+        {
+            speed_y = 0f;
+        }
+        rbody.velocity = new Vector2(speed_x, speed_y);
+
+        //スコア更新
+        Text scoreText =score.GetComponent<Text>();
+        scoreText.text = "SCORE "+scoreAmount.ToString("d5");
     }
 
-    private void FixedUpdate()
+    // ケーキ取得時プレイヤーを加速させる
+    public void Accelerate()
     {
-        //リジッドボディにspeed分の右方向の速度を入れる
-        rbody.velocity = new Vector2(speed,rbody.velocity.y);
+        speed_x += 5f;
+        scoreAmount += 10;
+    }
+
+    // ゲームオーバー処理
+    public void GameOver()
+    {
+        rbody.velocity = new Vector2(0f, 0f);
+        rbody.freezeRotation = false;
+        rbody.angularVelocity = 20f;
+
+        // 角度が75°以上になったら終了
+        if(gameObject.transform.localEulerAngles.z > 75)
+        {
+            // 走っているおじさんを非表示
+            gameObject.SetActive(false);
+
+            // 漏らしたおじさんを表示
+            endOg3.transform.position = gameObject.transform.position;
+            endOg3.SetActive(true);
+
+            Text resultText =result.GetComponent<Text>();
+            resultText.text = "Game\nOver";
+        }
+
+    }
+
+    // ゲームクリア処理
+    public void GameClear()
+    {
+        Text resultText =result.GetComponent<Text>();
+        resultText.text = "Game\nClear!";
     }
 }
+
+

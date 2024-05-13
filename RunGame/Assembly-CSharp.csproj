@@ -66,6 +66,8 @@
     <Compile Include="Assets\source\Stone.cs" />
     <Compile Include="Assets\source\Goal.cs" />
     <Compile Include="Assets\source\cameraManager.cs" />
+    <Compile Include="Assets\source\Cake.cs" />
+    <Compile Include="Assets\source\Banana.cs" />
     <Compile Include="Assets\source\Player.cs" />
   </ItemGroup>
   <ItemGroup>
